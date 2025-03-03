@@ -6,6 +6,10 @@ import re
 import os
 import bsfile
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 405b0f7427810f42a8b9553922ec22625469388f
 ### Shape Catagorys
 BeamShapes = ["W","C","S","HSS","WT","MC"]
 PlateShapes = ["PL","CP"]
@@ -109,6 +113,27 @@ def assignShops(table,shop):
 
 	return totals
 
+<<<<<<< HEAD
+=======
+### Searches a directory and outputs the first file matching the pattern
+def searchFiles(directory, pattern):
+    for filename in glob.glob(f"{directory}\\**\\{pattern}", recursive=True):
+        return filename
+    return None
+
+### Checks if a directory exists, then makes it if not
+def safeMakeDir(directory):
+	if not os.path.exists(directory):
+		os.mkdir(directory)
+
+### Opens a CSV produced from the Production Control page of Tekla EPM
+def openCSV(path):
+	with open(path) as csvFile:
+		reader = csv.DictReader(csvFile)
+		return makeTable(reader)
+
+
+>>>>>>> 405b0f7427810f42a8b9553922ec22625469388f
 ### Pulls the drawing for a given mark, from a given folder
 def pullDrawing(lotFolder,outputPath,mark,application):
 	dwgPDF = bsfile.searchFiles(lotFolder,f"*{mark["dwg"]}*.pdf")
@@ -118,10 +143,17 @@ def pullDrawing(lotFolder,outputPath,mark,application):
 		application.log(f"DRAWING {mark["dwg"]} NOT FOUND!!")
 	else:
 		#create the dwg folder
+<<<<<<< HEAD
 		bsfile.mkDir(f"{outputPath}\\dwgs")
 			
 		#create the shop folder
 		bsfile.mkDir(f"{outputPath}\\dwgs\\{mark["shop"]}")
+=======
+		safeMakeDir(f"{outputPath}\\dwgs")
+			
+		#create the shop folder
+		safeMakeDir(f"{outputPath}\\dwgs\\{mark["shop"]}")
+>>>>>>> 405b0f7427810f42a8b9553922ec22625469388f
 		
 		#copy the dwgs
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\{mark["shop"]}\\")
@@ -145,7 +177,11 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 		subFolder = totals[mark]["shape"]
 				
 		#make sure the path exists
+<<<<<<< HEAD
 		bsfile.mkDir(f"{outputPath}\\{subFolder}")
+=======
+		safeMakeDir(f"{outputPath}\\{subFolder}")
+>>>>>>> 405b0f7427810f42a8b9553922ec22625469388f
 		
 		pullDrawing(lotFolder,outputPath,totals[mark],application)
 		application.log(f"> Pulling files for {mark} on lot {totals[mark]["seq"]}")
@@ -181,7 +217,11 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 						thickness = totals[mark]["dimension"].split(" x ")[0].replace("/","_")
 						print(thickness)
 						subFolder = subFolder + "\\" + thickness
+<<<<<<< HEAD
 						bsfile.mkDir(f"{outputPath}\\{subFolder}")
+=======
+						safeMakeDir(f"{outputPath}\\{subFolder}")
+>>>>>>> 405b0f7427810f42a8b9553922ec22625469388f
 					
 					#variable for appending to the filename for bend and shop marking
 					append = ""
