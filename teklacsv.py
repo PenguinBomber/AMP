@@ -5,15 +5,25 @@ import nc1
 import re
 import os 
 
+
+### Shape Catagorys
 BeamShapes = ["W","C","S","HSS","WT","MC"]
 PlateShapes = ["PL","CP"]
 HandrailShapes = ["PIPE"]
+
+### Bought out Item grades + shapes to ignore when pulling NC1 files
 BOIShapes = ["NU","WA","U-BOLT","MB","HS","","MS","SG","STRD"]
 BOIGrades = ["ZERO_DENSITY"]
+
+### Shapes that will have a suffix added if holes are found in the file
 HoleCheck = ["FB"]
+### Shapes that will have a suffix added if holes are NOT found in the file
 NoHoleCheck = ["C","S","WT","MC","W"]
+
+### Shapes that will have a prefix added for their dimentions
 PrefixDimention = ["W","C","S","HSS","WT","MC","L","FB"]
 
+### Makes a table out of an open CSV
 def makeTable(table):
 	final = []
 	for row in table:
@@ -21,6 +31,7 @@ def makeTable(table):
 
 	return final
 
+### Outputs a list of all major mark pieces in the CSV, with all associated minor marks in a list per mark, using a table
 def getMajors(table):
 	mainMarks = {}
 	for row in table:
@@ -48,6 +59,7 @@ def getMajors(table):
 
 	return mainMarks
 
+### Outputs a list of pieces marks with quanities from a table
 def getTotals(table):
 	totals = {}
 	for row in table:
@@ -77,6 +89,7 @@ def getTotals(table):
 			}
 	return totals
 
+### Assigns shops to pieces (needs rework)
 def assignShops(table,shop):
 	totals = getTotals(table)
 	mains = getMajors(table)
@@ -96,16 +109,25 @@ def assignShops(table,shop):
 
 	return totals
 
+### Searches a directory and outputs the first file matching the pattern
 def searchFiles(directory, pattern):
     for filename in glob.glob(f"{directory}\\**\\{pattern}", recursive=True):
         return filename
     return None
 
+### Checks if a directory exists, then makes it if not
+def safeMakeDir(directory):
+	if not os.path.exists(directory):
+		os.mkdir(directory)
+
+### Opens a CSV produced from the Production Control page of Tekla EPM
 def openCSV(path):
 	with open(path) as csvFile:
 		reader = csv.DictReader(csvFile)
 		return makeTable(reader)
 
+
+### Pulls the drawing for a given mark, from a given folder
 def pullDrawing(lotFolder,outputPath,mark,application):
 	dwgPDF = searchFiles(lotFolder,f"*{mark["dwg"]}*.pdf")
 	#Drawing Pulling logic
@@ -114,17 +136,16 @@ def pullDrawing(lotFolder,outputPath,mark,application):
 		application.log(f"DRAWING {mark["dwg"]} NOT FOUND!!")
 	else:
 		#create the dwg folder
-		if not os.path.exists(f"{outputPath}\\dwgs"):
-			os.mkdir(f"{outputPath}\\dwgs")
+		safeMakeDir(f"{outputPath}\\dwgs")
 			
 		#create the shop folder
-		if not os.path.exists(f"{outputPath}\\dwgs\\{mark["shop"]}"):
-			os.mkdir(f"{outputPath}\\dwgs\\{mark["shop"]}")
+		safeMakeDir(f"{outputPath}\\dwgs\\{mark["shop"]}")
 		
 		#copy the dwgs
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\{mark["shop"]}\\")
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\")
 
+### Pulls all required NC1 files, pre-processes them, grabs drawings, and puts them all into one folder using a CSV produced from the Production Control page of Tekla EPM
 def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 	table = openCSV(CSVPath)
 	allClear = True
@@ -142,8 +163,7 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 		subFolder = totals[mark]["shape"]
 				
 		#make sure the path exists
-		if not os.path.exists(f"{outputPath}\\{subFolder}"):
-			os.mkdir(f"{outputPath}\\{subFolder}")
+		safeMakeDir(f"{outputPath}\\{subFolder}")
 		
 		pullDrawing(lotFolder,outputPath,totals[mark],application)
 		application.log(f"> Pulling files for {mark} on lot {totals[mark]["seq"]}")
@@ -179,8 +199,7 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 						thickness = totals[mark]["dimension"].split(" x ")[0].replace("/","_")
 						print(thickness)
 						subFolder = subFolder + "\\" + thickness
-						if not os.path.exists(f"{outputPath}\\{subFolder}"):
-							os.mkdir(f"{outputPath}\\{subFolder}")
+						safeMakeDir(f"{outputPath}\\{subFolder}")
 					
 					#variable for appending to the filename for bend and shop marking
 					append = ""
