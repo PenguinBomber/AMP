@@ -1,0 +1,1 @@
+pyinstaller -F -w --icon=amp.ico AMP.py
