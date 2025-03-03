@@ -3,17 +3,27 @@ import shutil
 import glob
 import nc1
 import re
-import os 
+import os
+import bsfile
 
+### Shape Catagorys
 BeamShapes = ["W","C","S","HSS","WT","MC"]
 PlateShapes = ["PL","CP"]
 HandrailShapes = ["PIPE"]
+
+### Bought out Item grades + shapes to ignore when pulling NC1 files
 BOIShapes = ["NU","WA","U-BOLT","MB","HS","","MS","SG","STRD"]
 BOIGrades = ["ZERO_DENSITY"]
+
+### Shapes that will have a suffix added if holes are found in the file
 HoleCheck = ["FB"]
+### Shapes that will have a suffix added if holes are NOT found in the file
 NoHoleCheck = ["C","S","WT","MC","W"]
+
+### Shapes that will have a prefix added for their dimentions
 PrefixDimention = ["W","C","S","HSS","WT","MC","L","FB"]
 
+### Makes a table out of an open CSV
 def makeTable(table):
 	final = []
 	for row in table:
@@ -21,6 +31,7 @@ def makeTable(table):
 
 	return final
 
+### Outputs a list of all major mark pieces in the CSV, with all associated minor marks in a list per mark, using a table
 def getMajors(table):
 	mainMarks = {}
 	for row in table:
@@ -48,6 +59,7 @@ def getMajors(table):
 
 	return mainMarks
 
+### Outputs a list of pieces marks with quanities from a table
 def getTotals(table):
 	totals = {}
 	for row in table:
@@ -77,6 +89,7 @@ def getTotals(table):
 			}
 	return totals
 
+### Assigns shops to pieces (needs rework)
 def assignShops(table,shop):
 	totals = getTotals(table)
 	mains = getMajors(table)
@@ -96,37 +109,27 @@ def assignShops(table,shop):
 
 	return totals
 
-def searchFiles(directory, pattern):
-    for filename in glob.glob(f"{directory}\\**\\{pattern}", recursive=True):
-        return filename
-    return None
-
-def openCSV(path):
-	with open(path) as csvFile:
-		reader = csv.DictReader(csvFile)
-		return makeTable(reader)
-
+### Pulls the drawing for a given mark, from a given folder
 def pullDrawing(lotFolder,outputPath,mark,application):
-	dwgPDF = searchFiles(lotFolder,f"*{mark["dwg"]}*.pdf")
+	dwgPDF = bsfile.searchFiles(lotFolder,f"*{mark["dwg"]}*.pdf")
 	#Drawing Pulling logic
 	#check if the drawing exists
 	if dwgPDF == None:
 		application.log(f"DRAWING {mark["dwg"]} NOT FOUND!!")
 	else:
 		#create the dwg folder
-		if not os.path.exists(f"{outputPath}\\dwgs"):
-			os.mkdir(f"{outputPath}\\dwgs")
+		bsfile.mkDir(f"{outputPath}\\dwgs")
 			
 		#create the shop folder
-		if not os.path.exists(f"{outputPath}\\dwgs\\{mark["shop"]}"):
-			os.mkdir(f"{outputPath}\\dwgs\\{mark["shop"]}")
+		bsfile.mkDir(f"{outputPath}\\dwgs\\{mark["shop"]}")
 		
 		#copy the dwgs
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\{mark["shop"]}\\")
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\")
 
+### Pulls all required NC1 files, pre-processes them, grabs drawings, and puts them all into one folder using a CSV produced from the Production Control page of Tekla EPM
 def pullFiles(CSVPath,outputPath,job,majorityShop,application):
-	table = openCSV(CSVPath)
+	table = bsfile.openCSV(CSVPath)
 	allClear = True
 	totals = assignShops(table,majorityShop)
 	beamTonnage = 0
@@ -136,14 +139,13 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 		problem = False
 		RFCFolder = r"\\10.10.1.106\Public\File Transfer\RFC Packages"
 		lotFolder = f"{RFCFolder}\\*{job}*{totals[mark]["seq"]}*"
-		file = searchFiles(lotFolder,f"{mark}.nc1")
+		file = bsfile.searchFiles(lotFolder,f"{mark}.nc1")
 		
 		#set the save folder for the nc1 file
 		subFolder = totals[mark]["shape"]
 				
 		#make sure the path exists
-		if not os.path.exists(f"{outputPath}\\{subFolder}"):
-			os.mkdir(f"{outputPath}\\{subFolder}")
+		bsfile.mkDir(f"{outputPath}\\{subFolder}")
 		
 		pullDrawing(lotFolder,outputPath,totals[mark],application)
 		application.log(f"> Pulling files for {mark} on lot {totals[mark]["seq"]}")
@@ -159,7 +161,7 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 				#STP File Logic
 				#only pull mainMark handrails
 				if totals[mark]["mainMark"] == mark:
-					file = searchFiles(lotFolder,f"*{mark}*.stp")
+					file = bsfile.searchFiles(lotFolder,f"*{mark}*.stp")
 					if file == None:
 						application.log(f"{mark}.stp NOT FOUND! Skipping....")
 						problem = True
@@ -179,8 +181,7 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 						thickness = totals[mark]["dimension"].split(" x ")[0].replace("/","_")
 						print(thickness)
 						subFolder = subFolder + "\\" + thickness
-						if not os.path.exists(f"{outputPath}\\{subFolder}"):
-							os.mkdir(f"{outputPath}\\{subFolder}")
+						bsfile.mkDir(f"{outputPath}\\{subFolder}")
 					
 					#variable for appending to the filename for bend and shop marking
 					append = ""
