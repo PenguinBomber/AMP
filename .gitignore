@@ -1,3 +1,5 @@
 build
 dist
+config.ini
+config.json
 AMP.spec
