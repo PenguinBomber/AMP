@@ -119,6 +119,32 @@ def pullDrawing(lotFolder,outputPath,mark,application):
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\{mark["shop"]}\\")
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\")
 
+### Pre Process NC1 files
+def processDSTV(mark, config):
+	processes = []
+	for shape in config["shapes"]:
+		if shape == mark["shape"]:
+			for process in config["Shapes"][shape]:
+				if not process in processes:
+					processes.push(process)
+	for group in config["Shape_Groups"]:
+		for shape in config["Shape_Groups"][group]["Shapes"]:
+			if shape == mark["shape"]:
+				for process in config["Shape_Groups"][group]["Processes"]:
+					if not process in processes:
+						processes.push(process)
+	
+	for group in config["Materail_Groups"]:
+		for grade in config["Material_Groups"][group]["Grades"]:
+			if grade == mark["grade"]:
+				for process in config["Material_Groups"][group]["Processes"]:
+					if not process in processes:
+						processes.push(process)
+	
+	for process in processes:
+		print(f"Performing Process: {process}")
+
+
 ### Pulls all required NC1 files, pre-processes them, grabs drawings, and puts them all into one folder using a CSV produced from the Production Control page of Tekla EPM
 def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 	table = bsfile.openCSV(CSVPath)
