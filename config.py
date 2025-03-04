@@ -14,7 +14,7 @@ def loadConfig():
 			"Main" : {
 				"Version" : '1',
 				"Use_RFC" : True,
-				"RFC_Folder" : r"\\10.10.1.106\Public\File Transfer\RFC Packages",
+				"RFC_Folder" : r"PLACEHOLDER",
 				"debug" : False
 			},
 			"Shapes" : {

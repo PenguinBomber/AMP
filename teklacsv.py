@@ -129,7 +129,7 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 	partCount = 0
 	for mark in totals:
 		problem = False
-		RFCFolder = r"\\10.10.1.106\Public\File Transfer\RFC Packages"
+		RFCFolder = r"PLACEHOLDER"
 		lotFolder = f"{RFCFolder}\\*{job}*{totals[mark]["seq"]}*"
 		file = bsfile.searchFiles(lotFolder,f"{mark}.nc1")
 		
