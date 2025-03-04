@@ -19,3 +19,11 @@ def openCSV(path):
 	with open(path) as csvFile:
 		reader = csv.DictReader(csvFile)
 		return makeTable(reader)
+
+### Makes a table out of an open CSV
+def makeTable(table):
+	final = []
+	for row in table:
+		final.append(row)
+
+	return final

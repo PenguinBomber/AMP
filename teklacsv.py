@@ -23,14 +23,6 @@ NoHoleCheck = ["C","S","WT","MC","W"]
 ### Shapes that will have a prefix added for their dimentions
 PrefixDimention = ["W","C","S","HSS","WT","MC","L","FB"]
 
-### Makes a table out of an open CSV
-def makeTable(table):
-	final = []
-	for row in table:
-		final.append(row)
-
-	return final
-
 ### Outputs a list of all major mark pieces in the CSV, with all associated minor marks in a list per mark, using a table
 def getMajors(table):
 	mainMarks = {}
