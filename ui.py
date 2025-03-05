@@ -54,11 +54,12 @@ class Application(tkinter.ttk.Frame):
 
 
 		#create the labels for the entry boxes
-		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 0.95 - Bryce Schuman")
+		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 0.96")
 		self.csvPathLabel = tkinter.ttk.Label(self.inputFrame, text="CSV File")
 		self.outPathLabel = tkinter.ttk.Label(self.inputFrame, text="Output Folder")
 		self.jobLabel = tkinter.ttk.Label(self.inputFrame, text="Job Number")
 		self.shopLabel = tkinter.ttk.Label(self.inputFrame, text="Shop")
+		self.copyrightLabel = tkinter.ttk.Label(self.inputFrame, text="Copyright © 2025, Bryce Schuman")
 
 		#place all of the widgets into the input grid
 		self.versionLabel.grid(column=0, row=0, columnspan=2, **options)
@@ -71,6 +72,8 @@ class Application(tkinter.ttk.Frame):
 		self.shopEntry.grid(column=1, row=4, **options)
 		self.shopLabel.grid(column=0, row=4, **options)
 		self.startButton.grid(column=0, row=5, columnspan=2, **options)
+		self.copyrightLabel.grid(column=0, row=6, columnspan=2, **options)
+
 
 	def grid_widgets(self):
 		options = dict(sticky=NSEW, padx=3, pady=4)
