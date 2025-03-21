@@ -7,11 +7,12 @@ from tkinter import filedialog as fd
 class Application(tkinter.ttk.Frame):
 
 	@classmethod
-	def main(cls):
+	def main(self,config):
+		self.config = config
 		tkinter.NoDefaultRoot()
 		root = tkinter.Tk()
 		root.title("AMP")
-		app = cls(root)
+		app = self(root)
 		app.grid(sticky=NSEW)
 		root.grid_columnconfigure(0, weight=0)
 		root.grid_columnconfigure(1, weight=1)
@@ -29,9 +30,14 @@ class Application(tkinter.ttk.Frame):
 	def create_variables(self):
 		self.csvPath = ''
 		self.outPath = ''
+		if self.config["Main"]["Use_RFC"]:
+			self.inPath = self.config["Main"]["RFC_Folder"]
+		else:
+			self.inPath = ''
 
 		self.csvPathDisplay = tkinter.StringVar(self, 'Select File')
 		self.outPathDisplay = tkinter.StringVar(self, 'Select Folder')
+		self.inPathDisplay = tkinter.StringVar(self, 'Select Folder')
 
 		self.jobVar = tkinter.StringVar(self, '')
 		self.shopVar = tkinter.StringVar(self, '')
@@ -45,6 +51,7 @@ class Application(tkinter.ttk.Frame):
 		self.inputFrame = tkinter.Frame(self)
 
 		#create the entry boxs
+		self.inPathEntry = tkinter.ttk.Button(self.inputFrame, textvariable=self.inPathDisplay,command=self.inPathPressed, width=15)
 		self.csvPathEntry = tkinter.ttk.Button(self.inputFrame, textvariable=self.csvPathDisplay,command=self.csvPressed, width=15)
 		self.outPathEntry = tkinter.ttk.Button(self.inputFrame, textvariable=self.outPathDisplay,command=self.outPathPressed, width=15)
 		self.jobEntry = tkinter.ttk.Entry(self.inputFrame, textvariable=self.jobVar, width=15)
@@ -54,7 +61,8 @@ class Application(tkinter.ttk.Frame):
 
 
 		#create the labels for the entry boxes
-		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 0.96")
+		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 0.98")
+		self.inPathLabel = tkinter.ttk.Label(self.inputFrame, text="Input Folder")
 		self.csvPathLabel = tkinter.ttk.Label(self.inputFrame, text="CSV File")
 		self.outPathLabel = tkinter.ttk.Label(self.inputFrame, text="Output Folder")
 		self.jobLabel = tkinter.ttk.Label(self.inputFrame, text="Job Number")
@@ -62,17 +70,30 @@ class Application(tkinter.ttk.Frame):
 		self.copyrightLabel = tkinter.ttk.Label(self.inputFrame, text="Copyright © 2025, Bryce Schuman")
 
 		#place all of the widgets into the input grid
-		self.versionLabel.grid(column=0, row=0, columnspan=2, **options)
-		self.csvPathEntry.grid(column=1, row=1, **options)
-		self.csvPathLabel.grid(column=0, row=1, **options)
-		self.outPathEntry.grid(column=1, row=2, **options)
-		self.outPathLabel.grid(column=0, row=2, **options)
-		self.jobEntry.grid(column=1, row=3, **options)
-		self.jobLabel.grid(column=0, row=3, **options)
-		self.shopEntry.grid(column=1, row=4, **options)
-		self.shopLabel.grid(column=0, row=4, **options)
-		self.startButton.grid(column=0, row=5, columnspan=2, **options)
-		self.copyrightLabel.grid(column=0, row=6, columnspan=2, **options)
+		row = 0
+		self.versionLabel.grid(column=0, row=row, columnspan=2, **options)
+		row += 1
+		if self.config["Main"]["Use_RFC"] == False:
+			self.inPathEntry.grid(column=1, row=row, **options)
+			self.inPathLabel.grid(column=0, row=row, **options)
+			row += 1
+		self.csvPathEntry.grid(column=1, row=row, **options)
+		self.csvPathLabel.grid(column=0, row=row, **options)
+		row += 1
+		self.outPathEntry.grid(column=1, row=row, **options)
+		self.outPathLabel.grid(column=0, row=row, **options)
+		row += 1
+		self.jobEntry.grid(column=1, row=row, **options)
+		self.jobLabel.grid(column=0, row=row, **options)
+		row += 1
+		self.shopEntry.grid(column=1, row=row, **options)
+		self.shopLabel.grid(column=0, row=row, **options)
+		row += 1
+		self.startButton.grid(column=0, row=row, columnspan=2, **options)
+		row += 1
+		self.copyrightLabel.grid(column=0, row=row, columnspan=2, **options)
+		row += 1
+
 
 
 	def grid_widgets(self):
@@ -101,14 +122,22 @@ class Application(tkinter.ttk.Frame):
 		path = fd.askdirectory(parent=self)
 		self.outPathDisplay.set(path[-15:])
 		self.outPath = path
+	
+	def inPathPressed(self):
+		path = fd.askdirectory(parent=self)
+		self.inPathDisplay.set(path[-15:])
+		self.inPath = path
 
 	def startPressed(self):
 		#self.log(self.csvPath)
 		#self.log(self.outPath)
 		self.log(f"Job Number: {self.jobVar.get()}")
 		self.log(f"Shop: {self.shopVar.get()}")
-		try:
-			teklacsv.pullFiles(self.csvPath,self.outPath, self.jobVar.get(), self.shopVar.get(),self)
-		except Exception as err:
-			self.log(f"Unexpected {err=}, {type(err)=}")
+		if self.config["Main"]["Debug"]:
+			teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
+		else:
+			try:
+				teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath, self.jobVar.get(), self.shopVar.get(),self)
+			except Exception as err:
+				self.log(f"Unexpected {err=}, {type(err)=}")
 		self.log("\nPart pull complete.")

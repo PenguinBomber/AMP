@@ -71,6 +71,7 @@ def getTotals(table):
 			totals[piece] = {
 				"qty" : qty,
 				"dwg" : dwg,
+				"pieceMark" : piece,
 				"mainMark" : mainMark,
 				"seq" : seq,
 				"shape" : shape,
@@ -120,33 +121,39 @@ def pullDrawing(lotFolder,outputPath,mark,application):
 		shutil.copy(dwgPDF,f"{outputPath}\\dwgs\\")
 
 ### Pre Process NC1 files
-def processDSTV(mark, config):
+def processDSTV(mark, file, application):
 	processes = []
-	for shape in config["shapes"]:
+	for shape in application.config["Shapes"]:
 		if shape == mark["shape"]:
-			for process in config["Shapes"][shape]:
+			for process in application.config["Shapes"][shape]:
 				if not process in processes:
-					processes.push(process)
-	for group in config["Shape_Groups"]:
-		for shape in config["Shape_Groups"][group]["Shapes"]:
+					processes.append(process)
+	for group in application.config["Shape_Groups"]:
+		for shape in application.config["Shape_Groups"][group]["Shapes"]:
 			if shape == mark["shape"]:
-				for process in config["Shape_Groups"][group]["Processes"]:
+				for process in application.config["Shape_Groups"][group]["Processes"]:
 					if not process in processes:
-						processes.push(process)
+						processes.append(process)
 	
-	for group in config["Materail_Groups"]:
-		for grade in config["Material_Groups"][group]["Grades"]:
+	for group in application.config["Material_Groups"]:
+		for grade in application.config["Material_Groups"][group]["Grades"]:
 			if grade == mark["grade"]:
-				for process in config["Material_Groups"][group]["Processes"]:
+				for process in application.config["Material_Groups"][group]["Processes"]:
 					if not process in processes:
-						processes.push(process)
-	
-	for process in processes:
-		print(f"Performing Process: {process}")
+						processes.append(process)
+	print(f"--- Mark {mark["pieceMark"]} ---")
+	if not "IGNORE" in processes:
+		if file != None:
+			for process in processes:
+				print(f"Performing Process: {process}")
+		#else:
+		#	application.log(f"{mark["pieceMark"]}.nc1 NOT FOUND! Skipping....")
+	else:
+		print(f"Performing Process: IGNORE")
 
 
 ### Pulls all required NC1 files, pre-processes them, grabs drawings, and puts them all into one folder using a CSV produced from the Production Control page of Tekla EPM
-def pullFiles(CSVPath,outputPath,job,majorityShop,application):
+def pullFiles(inputPath,CSVPath,outputPath,job,majorityShop,application):
 	table = bsfile.openCSV(CSVPath)
 	allClear = True
 	totals = assignShops(table,majorityShop)
@@ -155,8 +162,11 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 	partCount = 0
 	for mark in totals:
 		problem = False
-		RFCFolder = r"PLACEHOLDER"
-		lotFolder = f"{RFCFolder}\\*{job}*{totals[mark]["seq"]}*"
+		if application.config["Main"]["Use_RFC"]:
+			lotFolder = f"{inputPath}\\*{job}*{totals[mark]["seq"]}*"
+		else:
+			lotFolder = inputPath
+		
 		file = bsfile.searchFiles(lotFolder,f"{mark}.nc1")
 		
 		#set the save folder for the nc1 file
@@ -166,6 +176,7 @@ def pullFiles(CSVPath,outputPath,job,majorityShop,application):
 		bsfile.mkDir(f"{outputPath}\\{subFolder}")
 		
 		pullDrawing(lotFolder,outputPath,totals[mark],application)
+		processDSTV(totals[mark],file,application)
 		application.log(f"> Pulling files for {mark} on lot {totals[mark]["seq"]}")
 		if not totals[mark]["shape"] in BOIShapes and not totals[mark]["grade"] in BOIGrades:
 			#add weights

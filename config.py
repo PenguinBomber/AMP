@@ -13,7 +13,7 @@ def loadConfig():
 		config = {
 			"Main" : {
 				"Version" : '1',
-				"Use_RFC" : True,
+				"Use_RFC" : False,
 				"RFC_Folder" : r"PLACEHOLDER",
 				"debug" : False
 			},
@@ -56,5 +56,3 @@ def loadConfig():
 
 def loadSection(section):
 	return loadConfig()[section]
-
-print(loadSection("Material_Groups")["BOI"]["Grades"])
