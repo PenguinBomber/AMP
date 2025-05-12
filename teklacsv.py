@@ -122,6 +122,7 @@ def pullDrawing(lotFolder,outputPath,mark,application):
 
 ### Pre Process NC1 files
 def processDSTV(mark, file, application):
+	## Setup for the process "queue", processes added to this list are performed in the next for loop
 	processes = []
 	for shape in application.config["Shapes"]:
 		if shape == mark["shape"]:
@@ -141,11 +142,32 @@ def processDSTV(mark, file, application):
 				for process in application.config["Material_Groups"][group]["Processes"]:
 					if not process in processes:
 						processes.append(process)
+	
 	print(f"--- Mark {mark["pieceMark"]} ---")
 	if not "IGNORE" in processes:
 		if file != None:
+			directory = os.path.dirname(file)
+			markDSTV = nc1.DSTV(file,mark["shop"])
+			filename = mark["pieceMark"]
+			subDir = ""
+			prepend = []
+			append = []
+
+			## Perform processes as defined by process "queue"
 			for process in processes:
 				print(f"Performing Process: {process}")
+				if process == "MARK_DIMENTIONS":
+					prepend.append(totals[mark]["dimension"].replace("/","_"))
+			
+			for pend in prepend:
+				filename = pend + " - " + filename
+			for pend in append:
+				filename = filename + " - " + pend
+
+			fullPath = os.path.join(directory,subDir,filename)
+
+			markDSTV.writeFile(fullPath)
+
 		#else:
 		#	application.log(f"{mark["pieceMark"]}.nc1 NOT FOUND! Skipping....")
 	else:
@@ -173,7 +195,7 @@ def pullFiles(inputPath,CSVPath,outputPath,job,majorityShop,application):
 		subFolder = totals[mark]["shape"]
 				
 		#make sure the path exists
-		bsfile.mkDir(f"{outputPath}\\{subFolder}")
+		bsfile.mkDir(os.path.join(outputPath,subFolder))
 		
 		pullDrawing(lotFolder,outputPath,totals[mark],application)
 		processDSTV(totals[mark],file,application)
@@ -195,7 +217,7 @@ def pullFiles(inputPath,CSVPath,outputPath,job,majorityShop,application):
 						application.log(f"{mark}.stp NOT FOUND! Skipping....")
 						problem = True
 					else:
-						shutil.copy(file,f"{outputPath}\\{subFolder}\\{mark}.stp")
+						shutil.copy(file,os.path.join(outputPath,subFolder,f"{mark}.stp")
 			else:
 				#NC1 File Logic
 				if file == None:
@@ -209,8 +231,8 @@ def pullFiles(inputPath,CSVPath,outputPath,job,majorityShop,application):
 					if totals[mark]["shape"] in PlateShapes:
 						thickness = totals[mark]["dimension"].split(" x ")[0].replace("/","_")
 						print(thickness)
-						subFolder = subFolder + "\\" + thickness
-						bsfile.mkDir(f"{outputPath}\\{subFolder}")
+						subFolder = os.path.join(subFolder,thickness)
+						bsfile.mkDir(os.path.join(outputPath,subFolder))
 					
 					#variable for appending to the filename for bend and shop marking
 					append = ""
