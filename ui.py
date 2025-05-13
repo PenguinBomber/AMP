@@ -26,6 +26,9 @@ class Application(tkinter.ttk.Frame):
 		self.create_widgets()
 		self.grid_widgets()
 		self.grid_columnconfigure(0, weight=1)
+		self.log(f"AMP Started.")
+		if "MOTD" in self.config["Main"]:
+			self.log(self.config["Main"]["MOTD"])
 
 	def create_variables(self):
 		self.csvPath = ''
@@ -137,11 +140,15 @@ class Application(tkinter.ttk.Frame):
 			run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 			run.pullDrawings()
 			run.pullCNC()
+			run.pullTonnage()
 		else:
 			try:
 				run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 				run.pullDrawings()
 				run.pullCNC()
+				run.pullTonnage()
+				self.log("\nPart pull complete.")
 			except Exception as err:
 				self.log(f"Unexpected {err=}, {type(err)=}")
-		self.log("\nPart pull complete.")
+				self.log("\nPart pull failed.")
+

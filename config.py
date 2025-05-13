@@ -1,7 +1,7 @@
 import configparser
 import json
 ## Load a default config if the current one is empty
-def loadConfig(application):
+def loadConfig():
 	config = {}
 	
 	try:
@@ -9,17 +9,18 @@ def loadConfig(application):
 			config = json.loads(configFile.read())
 	except Exception as err:
 		config = {}
-		application.log("Failed to load config")
-		application.log(f"Unexpected {err=}, {type(err)=}")
+		print("Failed to load config")
+		print(f"Unexpected {err=}, {type(err)=}")
 	if config == {}:
-		application.log("Using built in defaults.")
+		print("Using built in defaults.")
 		config = {
 			"Main" : {
 				"Version" : '1',
 				"Use_RFC" : False,
 				"RFC_Folder" : r"PLACEHOLDER",
 				"debug" : False,
-				"useExpermental" : False
+				"useExpermental" : False,
+				"MOTD" : "Failed to load config, using built in defaults."
 			},
 			"CSV" : {
 				"Ignore" : ["NU","WA","U-BOLT","MB","HS","","MS"],

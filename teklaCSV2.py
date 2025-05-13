@@ -25,6 +25,16 @@ class TeklaCSV():
 		
 		return totals
 	
+	def getTotalWeight(self,shapes=[]):
+		totals = self.getTotals();
+		weight = 0;
+		for part in totals:
+			if shapes == []:
+				weight += float(totals[part]["weight"].replace("#","")) * float(totals[part]["quantity"])
+			elif totals[part]["shape"] in shapes:
+				weight += float(totals[part]["weight"].replace("#","")) * float(totals[part]["quantity"])
+		return weight
+
 	# Combines all pieces under the "parts" property of their respective assemblies
 	def getAssemblies(self):
 		assemblies = {}

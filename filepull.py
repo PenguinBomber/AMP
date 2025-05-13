@@ -12,7 +12,15 @@ class FilePull():
 		self.job = job
 		self.application = application
 		self.csv = csv
-		
+	
+	def pullTonnage(self):
+		data = teklaCSV2.TeklaCSV(self.csv,self.application)
+		totalWeight = data.getTotalWeight()
+		totalBeamWeight = data.getTotalWeight(["W","HSS","C","S"])
+
+		self.application.log(f"Beam Tonnage: {round(totalBeamWeight/2000)}")
+		self.application.log(f"Tonnage: {round(totalWeight/2000)}")
+
 	def pullDrawings(self):
 		data = teklaCSV2.TeklaCSV(self.csv,self.application)
 		totals = data.assignShop(self.shop)
