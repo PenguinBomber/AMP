@@ -1,6 +1,6 @@
 import tkinter.ttk
 import tkinter.scrolledtext
-import teklacsv
+import filepull
 from tkinter.constants import *
 from tkinter import filedialog as fd
 
@@ -108,11 +108,11 @@ class Application(tkinter.ttk.Frame):
 
 	def csvPressed(self):
 		path = fd.askopenfilename(
-            title="Select CSV File",
-            filetypes=(
-                ("CSV Files", r"*.csv"),
-                ("All Files", r"*.*")
-            ),
+			title="Select CSV File",
+			filetypes=(
+				("CSV Files", r"*.csv"),
+				("All Files", r"*.*")
+			),
 			parent=self
 		)
 		self.csvPathDisplay.set(path[-15:])
@@ -133,8 +133,11 @@ class Application(tkinter.ttk.Frame):
 		#self.log(self.outPath)
 		self.log(f"Job Number: {self.jobVar.get()}")
 		self.log(f"Shop: {self.shopVar.get()}")
-		if self.config["Main"]["Debug"]:
-			teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
+		if self.config["Main"]["debug"]:
+			run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
+			run.pullDrawings()
+			run.pullCNC()
+			#teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 		else:
 			try:
 				teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath, self.jobVar.get(), self.shopVar.get(),self)

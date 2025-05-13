@@ -39,11 +39,11 @@ def loadConfig():
 			"Shape_Groups" : {
 				"BEAMS" : {
 					"Shapes" : ["W","C","S"],
-					"Processes" : ["STENCIL", "NO_HOLES", "MARK_DIMENTIONS"]
+					"Processes" : ["STENCIL_BEAM", "NO_HOLES", "MARK_DIMENTIONS"]
 				},
 				"PLATES" : {
 				"Shapes" : ["PL","CP"],
-					"Processes" : ["STENCIL", "SEP_THICKNESS", "MARK_BENT"]
+					"Processes" : ["STENCIL_PLATE", "SEP_THICKNESS", "MARK_BENT"]
 					},
 				"BOI" : {
 					"Shapes" : ["NU","WA","U-BOLT","MB","HS","","MS","SG","STRD"],

@@ -2,7 +2,7 @@ import os
 import preprocessor
 import bsfile
 
-class teklaCSV():
+class TeklaCSV():
     def __init__(self,file,application):
         self.file = file
         self.raw = bsfile.openCSV(file)
@@ -17,11 +17,11 @@ class teklaCSV():
             for col in csvConfig["Headers"]:
                 rowData[col] = row[csvConfig["Headers"][col]]
         
-        if rowData["pieceMark"] in totals:
-            totals[rowData["pieceMark"]] += rowData["quantity"]
-        else:
-            totals[rowData["pieceMark"]] = rowData
-            totals[rowData["pieceMark"]]["shop"] = "unknown"
+            if rowData["pieceMark"] in totals:
+                totals[rowData["pieceMark"]]["quantity"] = int(totals[rowData["pieceMark"]]["quantity"]) + int(rowData["quantity"])
+            else:
+                totals[rowData["pieceMark"]] = rowData
+                totals[rowData["pieceMark"]]["shop"] = "unknown"
         
         return totals
     
@@ -41,7 +41,7 @@ class teklaCSV():
                     "parts" : {}
                 }
             
-            assemblies["parts"][rowData["pieceMark"]] = rowData
+            assemblies[rowData["mainMark"]]["parts"][rowData["pieceMark"]] = rowData
         
         return assemblies
 
@@ -49,10 +49,6 @@ class teklaCSV():
         csvConfig = self.application.config["CSV"]
         totals = self.getTotals()
         assemblies = self.getAssemblies()
-
-        for part in totals:
-            if part != totals[part]["mainMark"]:
-                totals[part]["shop"] = shop
         
         for assembly in assemblies:
             assemblies[assembly]["shop"] = shop;
@@ -60,13 +56,16 @@ class teklaCSV():
 
             # count all the non ignored items in the assembly
             for part in assemblies[assembly]["parts"]:
-                if not part["shape"] in csvConfig["Ignore"]:
+                if not assemblies[assembly]["parts"][part]["shape"] in csvConfig["Ignore"]:
                     count += 1
             
             if count <= 1:
-                if assemblies["parts"][assemblies["mainMark"]]["shape"] in ["PL","CP"]:
+                if assemblies[assembly]["parts"][assemblies[assembly]["mainMark"]]["shape"] in ["PL","CP"]:
                     assemblies[assembly]["shop"] = "stencil & ship"
-
+                    
+        for part in totals:
+            totals[part]["shop"] = assemblies[totals[part]["mainMark"]]["shop"]
+        
         return totals
 
 
