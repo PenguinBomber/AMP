@@ -15,7 +15,22 @@ def loadConfig():
 				"Version" : '1',
 				"Use_RFC" : False,
 				"RFC_Folder" : r"PLACEHOLDER",
-				"debug" : False
+				"debug" : False,
+				"useExpermental" : False
+			},
+			"CSV" : {
+				"Ignore" : ["NU","WA","U-BOLT","MB","HS","","MS"],
+				"Headers" : {
+					"drawing" : "Dwg",
+					"mainMark" : "Main Mk",
+					"pieceMark" : "Piece Mk",
+					"quantity" : "Qty",
+					"batch" : "Lot #",
+					"shape" : "Shape",
+					"grade" : "Grade",
+					"dimension" : "Dimension",
+					"weight" : "Gross Weight"
+				}
 			},
 			"Shapes" : {
 				"L" : ["MARK_DIMENTIONS"],
