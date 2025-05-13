@@ -157,7 +157,7 @@ def processDSTV(mark, file, application):
 			for process in processes:
 				print(f"Performing Process: {process}")
 				if process == "MARK_DIMENTIONS":
-					prepend.append(totals[mark]["dimension"].replace("/","_"))
+					prepend.append(mark["dimension"].replace("/","_"))
 			
 			for pend in prepend:
 				filename = pend + " - " + filename
@@ -217,7 +217,7 @@ def pullFiles(inputPath,CSVPath,outputPath,job,majorityShop,application):
 						application.log(f"{mark}.stp NOT FOUND! Skipping....")
 						problem = True
 					else:
-						shutil.copy(file,os.path.join(outputPath,subFolder,f"{mark}.stp")
+						shutil.copy(file,os.path.join(outputPath,subFolder,f"{mark}.stp"))
 			else:
 				#NC1 File Logic
 				if file == None:
