@@ -1,15 +1,18 @@
 import configparser
 import json
 ## Load a default config if the current one is empty
-def loadConfig():
+def loadConfig(application):
 	config = {}
 	
 	try:
 		with open("config.json", "r") as configFile:
 			config = json.loads(configFile.read())
-	except:
+	except Exception as err:
 		config = {}
+		application.log("Failed to load config")
+		application.log(f"Unexpected {err=}, {type(err)=}")
 	if config == {}:
+		application.log("Using built in defaults.")
 		config = {
 			"Main" : {
 				"Version" : '1',
@@ -65,8 +68,8 @@ def loadConfig():
 				}
 			}
 		}
-		with open("config.json", 'w') as configfile:
-			json.dump(config, configfile,indent=4)
+		#with open("config.json", 'w') as configfile:
+		#	json.dump(config, configfile,indent=4)
 	return config
 
 def loadSection(section):

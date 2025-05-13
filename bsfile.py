@@ -5,9 +5,9 @@ import csv
 
 ### Searches a directory and outputs the first file matching the pattern
 def searchFiles(directory, pattern):
-    for filename in glob.glob(os.path.join(directory,"**",pattern), recursive=True):
-        return filename
-    return None
+	for filename in glob.glob(os.path.join(directory,"**",pattern), recursive=True):
+		return filename
+	return None
 
 ### Checks if a directory exists, then makes it if not
 def mkDir(directory):

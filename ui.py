@@ -61,7 +61,7 @@ class Application(tkinter.ttk.Frame):
 
 
 		#create the labels for the entry boxes
-		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 0.98")
+		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 1.0")
 		self.inPathLabel = tkinter.ttk.Label(self.inputFrame, text="Input Folder")
 		self.csvPathLabel = tkinter.ttk.Label(self.inputFrame, text="CSV File")
 		self.outPathLabel = tkinter.ttk.Label(self.inputFrame, text="Output Folder")
@@ -137,10 +137,11 @@ class Application(tkinter.ttk.Frame):
 			run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 			run.pullDrawings()
 			run.pullCNC()
-			#teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 		else:
 			try:
-				teklacsv.pullFiles(self.inPath,self.csvPath,self.outPath, self.jobVar.get(), self.shopVar.get(),self)
+				run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
+				run.pullDrawings()
+				run.pullCNC()
 			except Exception as err:
 				self.log(f"Unexpected {err=}, {type(err)=}")
 		self.log("\nPart pull complete.")
