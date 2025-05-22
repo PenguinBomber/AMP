@@ -5,4 +5,4 @@ if __name__ == '__main__':
     print("Loading Config...")
     config = config.loadConfig()
     print("Starting Application...")
-    ui.Application.main(config)
+    ui.Application.main(config,"1.01")

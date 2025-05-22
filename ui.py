@@ -9,7 +9,8 @@ from tkinter import filedialog as fd
 class Application(tkinter.ttk.Frame):
 
 	@classmethod
-	def main(self,config):
+	def main(self,config,version):
+		self.version = version
 		self.config = config
 		tkinter.NoDefaultRoot()
 		root = tkinter.Tk()
@@ -66,7 +67,7 @@ class Application(tkinter.ttk.Frame):
 
 
 		#create the labels for the entry boxes
-		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text="Version 1.0")
+		self.versionLabel = tkinter.ttk.Label(self.inputFrame, text=f"Version {self.version}")
 		self.inPathLabel = tkinter.ttk.Label(self.inputFrame, text="Input Folder")
 		self.csvPathLabel = tkinter.ttk.Label(self.inputFrame, text="CSV File")
 		self.outPathLabel = tkinter.ttk.Label(self.inputFrame, text="Output Folder")
