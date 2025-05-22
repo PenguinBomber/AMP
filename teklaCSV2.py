@@ -26,6 +26,19 @@ class TeklaCSV():
 		
 		return totals
 	
+	def getAssemblyCount(self):
+		total = 0
+		csvConfig = self.application.config["CSV"]
+
+		for row in self.raw:
+			rowData = {}
+			for col in csvConfig["Headers"]:
+				rowData[col] = row[csvConfig["Headers"][col]]
+			
+			if rowData["pieceMark"] == rowData["mainMark"]:
+				total = total + int(rowData["quantity"])
+		return total
+	
 	def getTotalWeight(self,shapes=[]):
 		totals = self.getTotals();
 		weight = 0;

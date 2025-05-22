@@ -16,10 +16,28 @@ class FilePull():
 	def pullTonnage(self):
 		data = teklaCSV2.TeklaCSV(self.csv,self.application)
 		totalWeight = data.getTotalWeight()
+		totalAss = data.getAssemblyCount()
 		totalBeamWeight = data.getTotalWeight(["W","HSS","C","S"])
 
-		self.application.log(f"Beam Tonnage: {round(totalBeamWeight/2000)}")
-		self.application.log(f"Tonnage: {round(totalWeight/2000)}")
+		if totalWeight < 2000:
+			if totalWeight == 0:
+				displayTonnage = "0 Tons"
+			else:
+				displayTonnage = "Under 1 Ton"
+		else:
+			displayTonnage = f"{round(totalWeight/2000)} ton(s)"
+		
+		if totalBeamWeight < 2000:
+			if totalBeamWeight == 0:
+				displayBeamTonnage = "0 Tons"
+			else:
+				displayBeamTonnage = "Under 1 Ton"
+		else:
+			displayBeamTonnage = f"{round(totalBeamWeight/2000)} ton(s)"
+		
+		self.application.log(f"Beam Tonnage: {displayBeamTonnage}")
+		self.application.log(f"Assembly Count: {totalAss}")
+		self.application.log(f"Tonnage: {displayTonnage}")
 
 	def pullDrawings(self):
 		threads = []

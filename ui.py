@@ -145,8 +145,8 @@ class Application(tkinter.ttk.Frame):
 			run.pullCNC()
 			run.pullTonnage()
 		else:
+			threads = []
 			try:
-				threads = []
 				run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 				
 				threads.append(threading.Thread(run.pullDrawings))
@@ -158,7 +158,8 @@ class Application(tkinter.ttk.Frame):
 				
 				for thread in threads:
 					thread.join()
-				self.log(f"\nPart pull complete. ")
+				
+				self.log("\nPart pull complete.")
 			except Exception as err:
 				self.log(f"Unexpected {err=}, {type(err)=}")
 				self.log("\nPart pull failed.")
