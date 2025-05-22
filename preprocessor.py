@@ -77,10 +77,9 @@ class DSTVProcessor():
 							append.append("NO HOLES")
 					if process == "HOLES":
 						if "BO" in markDSTV.blocks: 
-							append.append("HOLE")
-					if process == "MARK_BENT":
-						if "KA" in markDSTV.blocks: 
 							append.append("HOLES")
+					if process == "MARK_BENT":
+						if "KA" in markDSTV.blocks:
 							rolled = False
 							bent = False
 						
