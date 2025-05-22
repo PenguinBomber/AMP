@@ -134,6 +134,7 @@ class Application(tkinter.ttk.Frame):
 		self.inPath = path
 
 	def startPressed(self):
+		startTime = time.time()
 		#self.log(self.csvPath)
 		#self.log(self.outPath)
 		self.log(f"Job Number: {self.jobVar.get()}")
@@ -145,7 +146,6 @@ class Application(tkinter.ttk.Frame):
 			run.pullTonnage()
 		else:
 			try:
-
 				threads = []
 				run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
 				
@@ -158,9 +158,9 @@ class Application(tkinter.ttk.Frame):
 				
 				for thread in threads:
 					thread.join()
-				
-				self.log("\nPart pull complete.")
+				self.log(f"\nPart pull complete. ")
 			except Exception as err:
 				self.log(f"Unexpected {err=}, {type(err)=}")
 				self.log("\nPart pull failed.")
+		self.log(f"Took {(time.time() - startTime):.2f} seconds")
 
