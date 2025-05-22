@@ -18,6 +18,7 @@ class TeklaCSV():
 				rowData[col] = row[csvConfig["Headers"][col]]
 		
 			if rowData["pieceMark"] in totals:
+				totals[rowData["pieceMark"]]["weight"] = f"{float(totals[rowData["pieceMark"]]["weight"].replace("#","")) + float(rowData["weight"].replace("#",""))}#"
 				totals[rowData["pieceMark"]]["quantity"] = int(totals[rowData["pieceMark"]]["quantity"]) + int(rowData["quantity"])
 			else:
 				totals[rowData["pieceMark"]] = rowData
@@ -30,9 +31,9 @@ class TeklaCSV():
 		weight = 0;
 		for part in totals:
 			if shapes == []:
-				weight += float(totals[part]["weight"].replace("#","")) * float(totals[part]["quantity"])
+				weight += float(totals[part]["weight"].replace("#",""))
 			elif totals[part]["shape"] in shapes:
-				weight += float(totals[part]["weight"].replace("#","")) * float(totals[part]["quantity"])
+				weight += float(totals[part]["weight"].replace("#",""))
 		return weight
 
 	# Combines all pieces under the "parts" property of their respective assemblies
