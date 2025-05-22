@@ -97,13 +97,11 @@ class FilePull():
 
 					bsfile.mkDir(cncFolder)
 					#copy into the main drawing folder
-					file = shutil.copy(cncPath,cncFolder)
+					threads.append(bsfile.asyncCopy(cncPath,cncFolder))
 					self.application.log(f"CNC found for {part} - {os.path.basename(cncPath)}")
 
-					name = os.path.basename(file)
-
-					processor = preprocessor.DSTVProcessor(totals[part],file,self.shop,self.application)
-					threads.append(processor.asyncProcessDTSV(os.path.join(processedFolder,name),self.job))
+					processor = preprocessor.DSTVProcessor(totals[part],cncPath,self.shop,self.application)
+					threads.append(processor.asyncProcessDTSV(os.path.join(processedFolder,os.path.basename(cncPath)),self.job))
 					self.application.log(f"CNC processed for {part}")
 				else:
 					self.application.log(f"No CNC found for {part}!")
