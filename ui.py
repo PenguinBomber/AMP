@@ -1,6 +1,8 @@
 import tkinter.ttk
 import tkinter.scrolledtext
 import filepull
+import threading
+import time
 from tkinter.constants import *
 from tkinter import filedialog as fd
 
@@ -143,10 +145,20 @@ class Application(tkinter.ttk.Frame):
 			run.pullTonnage()
 		else:
 			try:
+
+				threads = []
 				run = filepull.FilePull(self.csvPath,self.inPath,self.outPath,self.jobVar.get(), self.shopVar.get(),self)
-				run.pullDrawings()
-				run.pullCNC()
-				run.pullTonnage()
+				
+				threads.append(threading.Thread(run.pullDrawings))
+				threads.append(threading.Thread(run.pullCNC))
+				threads.append(threading.Thread(run.pullTonnage))
+
+				for thread in threads:
+					thread.start()
+				
+				for thread in threads:
+					thread.join()
+				
 				self.log("\nPart pull complete.")
 			except Exception as err:
 				self.log(f"Unexpected {err=}, {type(err)=}")
