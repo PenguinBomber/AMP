@@ -62,7 +62,7 @@ class Application(tkinter.ttk.Frame):
 		self.jobEntry = tkinter.ttk.Entry(self.inputFrame, textvariable=self.jobVar, width=15)
 		self.shopEntry = tkinter.ttk.Entry(self.inputFrame, textvariable=self.shopVar, width=15)
 
-		self.startButton = tkinter.ttk.Button(self.inputFrame, text='Start', command=self.startPressed)
+		self.startButton = tkinter.ttk.Button(self.inputFrame, text='Start', command=self.asyncStartPressed)
 
 
 		#create the labels for the entry boxes
@@ -133,6 +133,9 @@ class Application(tkinter.ttk.Frame):
 		self.inPathDisplay.set(path[-15:])
 		self.inPath = path
 
+	def asyncStartPressed(self):
+		thread = threading.Thread(target=self.startPressed())
+		thread.start()
 	def startPressed(self):
 		startTime = time.time()
 		#self.log(self.csvPath)
