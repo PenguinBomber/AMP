@@ -1,7 +1,7 @@
 import os
 import nc1
 import bsfile
-
+import threading
 class DSTVProcessor():
 	def __init__(self,mark,file,application):
 		self.file = file
@@ -119,3 +119,8 @@ class DSTVProcessor():
 				markDSTV.writeFile(fullPath)
 			else:
 				print("No file provided.")
+	def asyncProcessDTSV(self,output,job):
+		thread = threading.Thread(target=self.processDTSV,args=(output,job))
+		thread.start()
+		return thread
+	

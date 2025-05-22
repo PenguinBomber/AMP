@@ -22,6 +22,7 @@ class FilePull():
 		self.application.log(f"Tonnage: {round(totalWeight/2000)}")
 
 	def pullDrawings(self):
+		threads = []
 		data = teklaCSV2.TeklaCSV(self.csv,self.application)
 		totals = data.assignShop(self.shop)
 		
@@ -42,17 +43,19 @@ class FilePull():
 				drawingFolder = os.path.join(self.outputFolder,"Drawings")
 				bsfile.mkDir(drawingFolder)
 				#copy into the main drawing folder
-				shutil.copy(drawingPath,drawingFolder)
+				threads.append(bsfile.asyncCopy(drawingPath,drawingFolder))
 				#make the shop folder and copy the drawing into it
 				bsfile.mkDir(os.path.join(drawingFolder,totals[part]["shop"]))
-				shutil.copy(drawingPath,os.path.join(drawingFolder,totals[part]["shop"]))
+				threads.append(bsfile.asyncCopy(drawingPath,os.path.join(drawingFolder,totals[part]["shop"])))
 				self.application.log(f"Drawing found for {part} - {os.path.basename(drawingPath)}")
 			else:
 				self.application.log(f"No Drawing found for {part}!")
 			
 			self.application.log("")
+		bsfile.threadClean(threads)
 			
 	def pullCNC(self):
+		threads = []
 		data = teklaCSV2.TeklaCSV(self.csv,self.application)
 		totals = data.assignShop(self.shop)
 		
@@ -82,10 +85,10 @@ class FilePull():
 					name = os.path.basename(file)
 
 					processor = preprocessor.DSTVProcessor(totals[part],file,self.application)
-					processor.processDTSV(os.path.join(processedFolder,name),self.job)
+					threads.append(processor.asyncProcessDTSV(os.path.join(processedFolder,name),self.job))
 					self.application.log(f"CNC processed for {part}")
 				else:
 					self.application.log(f"No CNC found for {part}!")
 			
 			self.application.log("")
-			
+		bsfile.threadClean(threads)
