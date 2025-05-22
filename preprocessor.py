@@ -3,11 +3,12 @@ import nc1
 import bsfile
 import threading
 class DSTVProcessor():
-	def __init__(self,mark,file,application):
+	def __init__(self,mark,file,majorShop,application):
 		self.file = file
 		self.path = os.path.dirname(file)
 		self.application = application
 		self.mark = mark
+		self.majorShop = majorShop
 
 	def getProcesses(self):
 		# checks the config provided by the application for any processes that need to be run on this mark and then returns the list of processes
@@ -68,7 +69,10 @@ class DSTVProcessor():
 				# perform processes as defined by process array
 				for process in processes:
 					print(f"Performing Process: {process}")
-					if process == "MARK_DIMENTIONS":
+					if process == "MARK_SHOP":
+						if self.mark["shop"] != self.majorShop:
+							append.append(self.mark["shop"])
+					if process == "MARK_DIMENSIONS":
 						prepend.append(self.mark["dimension"].replace("/","_"))
 					if process == "MARK_GRADE":
 						append.append(self.mark["grade"].replace("/","_"))

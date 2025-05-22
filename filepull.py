@@ -84,7 +84,7 @@ class FilePull():
 
 					name = os.path.basename(file)
 
-					processor = preprocessor.DSTVProcessor(totals[part],file,self.application)
+					processor = preprocessor.DSTVProcessor(totals[part],file,self.shop,self.application)
 					threads.append(processor.asyncProcessDTSV(os.path.join(processedFolder,name),self.job))
 					self.application.log(f"CNC processed for {part}")
 				else:

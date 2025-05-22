@@ -37,13 +37,13 @@ def loadConfig():
 				}
 			},
 			"Shapes" : {
-				"L" : ["MARK_DIMENTIONS"],
-				"FB" : ["MARK_DIMENTIONS","MARK_BENT"]
+				"L" : ["MARK_DIMENSIONS"],
+				"FB" : ["MARK_DIMENSIONS","MARK_BENT"]
 			},
 			"Shape_Groups" : {
 				"BEAMS" : {
 					"Shapes" : ["W","C","S"],
-					"Processes" : ["STENCIL_BEAM", "NO_HOLES", "MARK_DIMENTIONS"]
+					"Processes" : ["STENCIL_BEAM", "NO_HOLES", "MARK_DIMENSIONS"]
 				},
 				"PLATES" : {
 				"Shapes" : ["PL","CP"],
