@@ -17,6 +17,7 @@ class Application(tkinter.ttk.Frame):
 		root.title("AMP")
 		app = self(root)
 		app.grid(sticky=NSEW)
+		root.iconbitmap("amp.ico")
 		root.grid_columnconfigure(0, weight=0)
 		root.grid_columnconfigure(1, weight=1)
 		root.grid_rowconfigure(0, weight=1)
